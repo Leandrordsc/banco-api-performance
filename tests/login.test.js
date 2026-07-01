@@ -1,5 +1,6 @@
 import http from "k6/http";
 import { sleep, check } from "k6";
+import { pegarBaseUrl } from "../utils/variaveis.js";
 const postLogin = JSON.parse (open ('../fixtures/postLogin.json'))
 
 export const options = {
@@ -14,7 +15,7 @@ export const options = {
   },
 };
 export default function () {
-  const url = "http://localhost:3000/login";
+  const url =  pegarBaseUrl ()+ '/login';
   const payload = JSON.stringify(postLogin);
 
   const params = {
@@ -28,7 +29,6 @@ export default function () {
     "Validar que o Status é 200": (r) => r.status === 200,
     "Validar que o Token é string": (r) => typeof r.json().token == "string",
   });
-  console.log(postLogin)
 
   sleep(1);
 }
