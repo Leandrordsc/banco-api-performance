@@ -1,33 +1,34 @@
-import http from 'k6/http';
-import { sleep, check } from 'k6';
+import http from "k6/http";
+import { sleep, check } from "k6";
+import { pegarBaseUrl } from "../utils/variaveis.js";
+const postLogin = JSON.parse (open ('../fixtures/postLogin.json'))
 
 export const options = {
-    vus: 20,
-    duration: '30s',
-    thresholds: {
-        http_req_duration: ['p(90)<3000', 'max<5000'],
-        http_req_failed: ['rate<0.01']
-    }
+  stages: [
+    { duration: "10s", target: 10 },
+    //{ duration: "20s", target: 20 },
+  ],
+
+  thresholds: {
+    http_req_duration: ["p(90)<3000", "max<5000"],
+    http_req_failed: ["rate<0.01"],
+  },
 };
-export default function (){
-        const url = 'http://localhost:3000/login';
-        const payload = JSON.stringify({
-            username: 'julio.lima',
-            senha: '123456'
-        });
+export default function () {
+  const url =  pegarBaseUrl ()+ '/login';
+  const payload = JSON.stringify(postLogin);
 
-        const params = {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        };
-       const res = http.post(url, payload, params);
+  const params = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const res = http.post(url, payload, params);
 
-       check (res,{
-        'Validar que o Status é 200': (r) => r.status === 200,
-        'Validar que o Token é string': (r) => typeof(r.json().token) == 'string'
-       })
+  check(res, {
+    "Validar que o Status é 200": (r) => r.status === 200,
+    "Validar que o Token é string": (r) => typeof r.json().token == "string",
+  });
 
-       sleep(1);
-
-    }
+  sleep(1);
+}
